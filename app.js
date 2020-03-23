@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xssClean = require("xss-clean");
 const hpp = require("hpp");
+const compression = require('compression');
 
 var cors = require('cors')
 
@@ -107,6 +108,10 @@ app.use((req,res,next)=>{
     req.requestTime = new Date().toISOString();
     next()
 })
+
+
+//compression, it will only cmpress text not images
+app.use(compression())
 
 // To serve Static files
 app.use(express.static(`${__dirname}/public`)); //try http://127.0.0.1:3000/overview.html
