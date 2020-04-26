@@ -51,7 +51,7 @@ const signup = catchAsync(async (req,res,next)=>{
     const url = `${req.protocol}://${req.get('host')}/me`;
     await new Email(newUser,url).sendWelcome();
 
-    createAndSendToken(newUser,201,res,userData);
+    createAndSendToken(newUser,201,res,newUser);
     
     // let token = signInToken(newUser._id);
     
@@ -169,7 +169,6 @@ const restrictTo = (...roles)=>{
 }
 
 const forgotPassword = catchAsync(async (req,res,next)=>{
-
     //get User
     let user = await User.findOne({"email":req.body.email});
 
@@ -185,8 +184,11 @@ const forgotPassword = catchAsync(async (req,res,next)=>{
     
     // 4.send mail
 
-    let resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`
-
+    // let resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`
+    let resetUrl = `${req.protocol}://${req.get('host')}/welcome/reset-password?token=${token}`
+    // resetUrl = welcome/reset-password/f234860069e67aceb895b6730550c2a49301d8b8ef29cbfbba518d49af78c93c
+    
+    
     // let message = `Forgot your password ? Submit your password here ${resetUrl}`
 
     // console.log(message)
@@ -201,14 +203,14 @@ const forgotPassword = catchAsync(async (req,res,next)=>{
 
     res.status(200).json({
         status:"success",
-        message:'Token sent to mail'
+        message:'Please Check your mail to reset your password'
     })
 })
 
 
 const resetPassword = catchAsync( async (req,res,next)=>{
     //get token from parameters
-    let token = req.params.token
+    let token = req.params.token;
 
     //get the user 
     let encyptedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -247,7 +249,10 @@ const updateMypassword = catchAsync(async (req,res,next)=>{
      
      await user.save();    //as we need to run validators and save middleware
      
-     res.status(200).json();
+     res.status(200).json({
+        status:"success",
+        user
+    });
      
 })
 
@@ -263,32 +268,29 @@ const filterFields = (reqBody)=>{
 }
 
 //only for render pages ,not for errors
+//this is for UI to render pages based on if user already logged in
+
 const isLoggedIn = catchAsync(async (req,res,next)=>{
     
-        if(req.cookies.jwt){
-            let token;
-        
-            token = req.cookies.jwt
-    
-        let decoded = await promisify(jwt.verify)(token,process.env.JWT_SECRET);
-    
-        let currentUser = await User.findById(decoded.id)   //decoded.id is user ID
-        if(!currentUser){
-            return next();
-        }
-    
-        if(currentUser.isUserhasChangePassword(decoded.iat)){
-            return next()
-        }
-           
-        //There is a looged in user
-        //this is for UI to render pages based on if user already logged in
-        res.currentUser = currentUser
-        return next();
+    let token;
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+        token = req.headers.authorization.split(" ")[1];
+    }else if(req.cookies.jwt){
+        token = req.cookies.jwt
     }
-    next();
+
+    let decoded = await promisify(jwt.verify)(token,process.env.JWT_SECRET);
+    let currentUser = await User.findById(decoded.id)   //decoded.id is user ID
+
+    if(currentUser && currentUser.isUserhasChangePassword(decoded.iat)){
+        currentUser = ""
+    }
     
+    res.status(200).json({
+        status:"success",
+        user:currentUser
     })
+})
 
 // const updateUser = catchAsync(async (req,res,next)=>{
 //     console.log(req.body)

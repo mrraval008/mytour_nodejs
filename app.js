@@ -7,7 +7,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xssClean = require("xss-clean");
 const hpp = require("hpp");
-const compression = require('compression');
+// const compression = require('compression');
 
 var cors = require('cors')
 
@@ -39,7 +39,7 @@ app.use(helmet());   // set security http headers middleware
 
 // allow only 100 request in one hour   // to prevent from deanil of service or bruit force attacks
 const limiter = rateLimit({
-    max:100,
+    max:1000,
     windowMs: 60 * 60 * 1000,
     message:"Too Many request from this IP,please try after one hour"
 })
@@ -102,16 +102,13 @@ if(process.env.NODE_ENV === 'development'){
 }
 //own middle ware
 app.use((req,res,next)=>{
-    console.log("req.files",req.files)
-    // console.log("req.files1",req.photo)
-    
     req.requestTime = new Date().toISOString();
     next()
 })
 
 
 //compression, it will only cmpress text not images
-app.use(compression())
+// app.use(compression())
 
 // To serve Static files
 app.use(express.static(`${__dirname}/public`)); //try http://127.0.0.1:3000/overview.html
