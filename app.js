@@ -110,6 +110,7 @@ app.use((req,res,next)=>{
 //compression, it will only cmpress text not images
 // app.use(compression())
 
+
 // To serve Static files
 app.use(express.static(`${__dirname}/public`)); //try http://127.0.0.1:3000/overview.html
 
