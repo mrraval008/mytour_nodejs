@@ -6,33 +6,28 @@ class APIFeatures {
 
 
     filter(){
-        // console.log("this.query str",this.queryStr)
+        for(let key in this.queryStr){
+            let val = this.queryStr[key]
+            if(val.startsWith("{") && val.endsWith("}")){
+                this.queryStr[key] = JSON.parse(val);
+            }
+        }
         let queryStr = JSON.stringify(this.queryStr);
         queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>{
             return `$${match}`
         })
 
         queryStr = JSON.parse(queryStr);
-        if(queryStr["slug"]){
-            queryStr["slug"] = new RegExp(queryStr["name"]);
+        if(queryStr["name"]){
+            queryStr["name"] = new RegExp(queryStr["name"],'i'); //'i' to ignore case ex. {name:/city/i}
         }
-        console.log("QUERYSTR",queryStr);
         
         let queryObj = { ...queryStr }
         let excludedFields = ['page','limit','sort','fields'];
         excludedFields.forEach(field=>{
             delete queryObj[field]; 
         });
-        if(queryObj['role']){
-            queryObj=  {
-                'role': {
-                  '$in': [
-                    'guide', 'lead-guide'
-                  ]
-                }
-              }
-        }
-        // console.log(queryObj)
+        
         this.query.find(queryObj);
         return this;
     }
