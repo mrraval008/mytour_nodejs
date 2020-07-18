@@ -5,7 +5,7 @@ const Tour = require('./../models/TourModel');
 
 // const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/AppError');
+const AppError = require('./../utils/appError');
 const factory = require('./factoryController');
 
 
@@ -31,30 +31,24 @@ const uploadTourImages = upload.fields([
 
 
 const resizeTourImages = catchAsync(async (req, res, next) => {
-
     if (req.files && req.files.imageCover) {
         req.body.imageCover = `tour-${req.params.id}-${Date.now()}.jpeg`;
         await sharp(req.files["imageCover"][0].buffer)
             .resize(2000, 1333)   //to make non-square image to square image
             .toFormat("jpeg")
             .jpeg({ quality: 90 })
-            .toFile(`D:/HTML_Practice/Apps/Tour_App/tour-app/src/assets/img/tours/${req.body.imageCover}`)
+            .toFile(`https://mytour11.herokuapp.com/src/assets/img/tours/${req.body.imageCover}`)
     }
     if(req.files && req.files.images){
-        req.body.images = []
-        await Promise.all(req.files.images.map(async (file, i) => {
-            const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
-    
-            await sharp(file.buffer)
-                .resize(2000, 1333)   //to make non-square image to square image
-                .toFormat("jpeg")
-                .jpeg({ quality: 90 })
-                .toFile(`D:/HTML_Practice/Apps/Tour_App/tour-app/src/assets/img/tours/${filename}`)
-            req.body.images.push(filename)
-        }))
+        const filename = `tour-${req.params.id}-${Date.now()}.jpeg`;
+        let file = req.files.images[0];
+        await sharp(file.buffer)
+            .resize(2000, 1333)   //to make non-square image to square image
+            .toFormat("jpeg")
+            .jpeg({ quality: 90 })
+            .toFile(`https://mytour11.herokuapp.com/src/assets/img/tours/${filename}`)
+        req.body.images = filename;
     }
- 
-
     next();
 
 })
@@ -63,16 +57,15 @@ const resizeTourImages = catchAsync(async (req, res, next) => {
 const aliasTopTour = (req, res, next) => {
     req.query.limit = '5';
     req.query.sort = '-ratingsAverage,price';
-    req.query.fields = 'name,price,summary,difficulty,ratingsAverage';
     next();
 }
 
 const getTourStats = catchAsync(async (req, res, next) => {   //catchasync function is used to try catch block used multiple place/now with catchasync every thing is at one place
 
     let stats = await Tour.aggregate([
-        {
-            $match: { ratingsAverage: { $gte: 4.5 } }
-        },
+        // {
+        //     $match: { ratingsAverage: { $gte: 4.5 } }
+        // },
         {
             $group: {
                 _id: '$difficulty',   //it will give three docs as we have three dificulties i.e. easy medium,difficult
@@ -131,11 +124,11 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
             }
         },
         {
-            $sort: { 'numOfTours': -1 }
+            $sort: { 'month': 1 }
         },
-        {
-            $limit: 6
-        }
+        // {
+        //     $limit: 6
+        // }
     ])
     res.status(200).json({
         status: "success",
@@ -148,59 +141,15 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
 
 
 const getAllTour = factory.getAll(Tour);
-// catchAsync(async (req,res,next) =>{
-//     let query = Tour.find();
-//     let features = new APIFeatures(query,req.query).filter().sort().limitFields().pagination();
-
-//     let tourData = await features.query;
-//     res.status(200).json({
-//         status:"success",
-//         results:tourData.length,
-//         data:{
-//             tour:tourData
-//         }
-//     })
-// })
-
 
 const getTour = factory.getOne(Tour, { path: 'reviews' })
-// catchAsync(async (req,res,next)=>{
-//     let tourData = await Tour.findById(req.params.id).populate('reviews');   //virtaul populate review
-//     if(!tourData){
-//         let err = new AppError(`Tour not found for this id - ${req.params.id}`,404)
-//         return next(err);   //It will  jump to global error handle middleware
-//     }
-//     res.status(200).json({
-//         status:"success",
-//         data:{
-//             tour:tourData
-//         }
-//     })
-// })
 
 const createTour = factory.createOne(Tour)
 
 
 
 const updateTour = factory.updateOne(Tour);
-// const updateTour = catchAsync(async (req,res,next)=>{
-//     let updatedTour = await Tour.findByIdAndUpdate(req.params.id,req.body,{
-//         new:true,
-//         runValidators:true
-//     })
 
-//     if(!updatedTour){
-//         let err = new AppError(`Tour not found for this id - ${req.params.id}`,"404")
-//         return next(err);   //It will  jump to global error handle middleware
-//     }
-
-//     res.status(400).json({
-//         status:"success",
-//         data:{
-//             tour:updatedTour
-//         }
-//     })
-// })
 
 const deleteTour = factory.deleteOne(Tour);
 

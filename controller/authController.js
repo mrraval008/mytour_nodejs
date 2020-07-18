@@ -43,6 +43,7 @@ const createAndSendToken = (user, statusCode, res, userData) => {
 
 
 
+
 const signup = catchAsync(async (req, res, next) => {
     let userData = { name, email, password, passwordConfirm, photo } = req.body;   //to 
     // console.log("userData",userData)
@@ -52,7 +53,6 @@ const signup = catchAsync(async (req, res, next) => {
     await new Email(newUser, url).sendWelcome();
 
     createAndSendToken(newUser, 201, res, userData);
-
     // let token = signInToken(newUser._id);
 
     //expire option JWT_EXPIRES_IN =>
@@ -148,7 +148,7 @@ const protect = catchAsync(async (req, res, next) => {
 
     //5. Grant access
     req.user = currentUser;  //for restrictTo function
-    res.user = currentUser;
+    // res.user = currentUser;
     next();
 
 })
@@ -168,8 +168,8 @@ const restrictTo = (...roles) => {
 
 }
 
-const forgotPassword = catchAsync(async (req, res, next) => {
 
+const forgotPassword = catchAsync(async (req, res, next) => {
     //get User
     let user = await User.findOne({ "email": req.body.email });
 
@@ -185,8 +185,11 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
     // 4.send mail
 
-    let resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`
-
+    // let resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`
+    let resetUrl = `${req.protocol}://${req.get('host')}/welcome/reset-password?token=${token}`
+    // resetUrl = welcome/reset-password/f234860069e67aceb895b6730550c2a49301d8b8ef29cbfbba518d49af78c93c
+    
+    
     // let message = `Forgot your password ? Submit your password here ${resetUrl}`
 
     // console.log(message)
@@ -200,15 +203,15 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
 
     res.status(200).json({
-        status: "success",
-        message: 'Token sent to mail'
+        status:"success",
+        message:'Please Check your mail to reset your password'
     })
 })
 
 
 const resetPassword = catchAsync(async (req, res, next) => {
     //get token from parameters
-    let token = req.params.token
+    let token = req.params.token;
 
     //get the user 
     let encyptedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -241,14 +244,16 @@ const updateMypassword = catchAsync(async (req, res, next) => {
     if (!user || !isVerified) {
         return next(new AppError(`Incorrect email or password`, "401"));
     }
-    //Update password
-    user.password = req.body.updatedPassword;
-    user.passwordConfirm = req.body.updatedPasswordConfirm;
-
-    await user.save();    //as we need to run validators and save middleware
-
-    res.status(200).json();
-
+     //Update password
+     user.password = req.body.updatedPassword;
+     user.passwordConfirm = req.body.updatedPasswordConfirm;
+     
+     await user.save();    //as we need to run validators and save middleware
+     
+     res.status(200).json({
+        status:"success",
+        user
+    });
 })
 
 const filterFields = (reqBody) => {
@@ -289,6 +294,7 @@ const isLoggedIn = catchAsync(async (req, res, next) => {
     }
     res.status(200).json(obj);
 
+//this is for UI to render pages based on if user already logged in
 })
 
 // const updateUser = catchAsync(async (req,res,next)=>{

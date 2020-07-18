@@ -6,7 +6,6 @@ class APIFeatures {
 
 
     filter(){
-        // console.log("this.query str",this.queryStr)
         for(let key in this.queryStr){
             let val = this.queryStr[key]
             if(val.startsWith("{") && val.endsWith("}")){

@@ -8,7 +8,7 @@ const deleteOne = Model => catchAsync(async (req,res,next)=>{
     let doc = await Model.findByIdAndDelete(req.params.id);
 
     if(!doc){
-        let err = new appError(`doc not found for this id - ${req.params.id}`,"404")
+        let err = new AppError(`doc not found for this id - ${req.params.id}`,"404")
         return next(err);   //It will  jump to global error handle middleware
     }
 
@@ -24,11 +24,16 @@ const deleteOne = Model => catchAsync(async (req,res,next)=>{
 
 const updateOne = Model => catchAsync(async (req,res,next)=>{
    // console.log("Update Tour log",req.params.id,req.body)
-        let updatedDoc = await Model.findByIdAndUpdate(req.params.id,req.body,{
-            new:true,
-            runValidators:true
-        })
-    
+        let updatedDoc = "";
+        if(req.body.images){
+            updatedDoc = await Model.findByIdAndUpdate(req.params.id,{ $push: { "images": req.body.images}})
+        }else{
+            updatedDoc = await Model.findByIdAndUpdate(req.params.id,req.body,{
+                new:true,
+                // runValidators:true    will not work in update as "this" in validator is refer to window object , not current document, I have handled in front end
+            })
+        }
+     
         if(!updatedDoc){
             let err = new appError(`Doc not found for this id - ${req.params.id}`,"404")
             return next(err);   //It will  jump to global error handle middleware

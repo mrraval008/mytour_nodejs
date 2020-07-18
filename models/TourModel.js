@@ -64,13 +64,14 @@ let tourSchema = new mongoose.Schema({
         type:Number,
         default:4.5 //if rating is not given .it will take 4.5
     },
-    priceDiscount:{
-        type:Number,
-        validate:{
-            validator:function(val){    //custom validator
-                return val < this.price;   //THIS IS REFER TO CURRENT DOCUMENT
-            },
-            message:'Discount should be less then ({VALUE})'
+    priceDiscount: {
+        type: Number,
+        validate: {
+          validator: function(val) {
+            // this only points to current doc on NEW document creation
+            return val < this.price;
+          },
+          message: 'Discount price ({VALUE}) should be below regular price'
         }
     },
     summary:{
@@ -85,7 +86,7 @@ let tourSchema = new mongoose.Schema({
     imageCover:{
         type:String,
         trim:true,
-        required:[true,'A tour must have imageCover']
+        default:"tour-1-1.jpg"
     },
     images:[String],
     createdAt:{

@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 const Booking = require('./../models/BookingModel');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/AppError');
+const AppError = require('./../utils/appError');
 const factory = require('./factoryController');
 const Tour = require('./../models/TourModel');
 
@@ -39,8 +39,8 @@ const getCheckoutSession = catchAsync( async (req,res,next)=>{
     //2. create checkout session
     const session =await stripe.checkout.sessions.create({
         payment_method_types:['card'],
-        success_url:`http://localhost:4200/tourDetails/${req.params.tourId}`, //after successfully card payment user will redirect to this page
-        cancel_url:`http://localhost:4200/tourDetails/${req.params.tourId}`,//after error in card payment user will redirect to this page
+        success_url:`https://mytour11.herokuapp.com/tourDetails/${req.params.tourId}`, //after successfully card payment user will redirect to this page
+        cancel_url:`https://mytour11.herokuapp.com/tourDetails/${req.params.tourId}`,//after error in card payment user will redirect to this page
         customer_email:req.user.email,
         client_reference_id:req.params.tourId,
         line_items:[
