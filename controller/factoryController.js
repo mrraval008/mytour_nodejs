@@ -84,7 +84,6 @@ const getAll = (Model)=>catchAsync(async (req,res,next) =>{
     console.log(req.query)
     //To handle nested route
     let filter = {}
-    console.log("req.params.tourId",req.params.tourId)
     if(req.params.tourId){
         filter = {tour:req.params.tourId}
     }

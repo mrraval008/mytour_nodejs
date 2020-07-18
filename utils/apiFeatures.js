@@ -19,15 +19,24 @@ class APIFeatures {
 
         queryStr = JSON.parse(queryStr);
         if(queryStr["name"]){
-            queryStr["name"] = new RegExp(queryStr["name"],'i'); //'i' to ignore case ex. {name:/city/i}
+            queryStr["slug"] = new RegExp(queryStr["name"],'i');
+            delete queryStr["name"]
         }
-        
         let queryObj = { ...queryStr }
         let excludedFields = ['page','limit','sort','fields'];
         excludedFields.forEach(field=>{
             delete queryObj[field]; 
         });
         
+        if(queryObj['role']){
+            queryObj=  {
+                'role': {
+                  '$in': [
+                    'guide', 'lead-guide'
+                  ]
+                }
+              }
+        }
         this.query.find(queryObj);
         return this;
     }

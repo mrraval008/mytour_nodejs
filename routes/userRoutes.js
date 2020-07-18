@@ -18,7 +18,6 @@ router.post("/forgotPassword",authController.forgotPassword);
 router.post("/resetPassword/:token",authController.resetPassword);
 router.get("/isLoggedIn",authController.isLoggedIn);
 
-
 //route that come after this, will all get authController.protect middleware
 
 router.use(authController.protect);
