@@ -45,7 +45,7 @@ const createAndSendToken = (user,statusCode,res,userData)=>{
 
 const signup = catchAsync(async (req,res,next)=>{
     let userData = {name,email,password,passwordConfirm,photo} = req.body;   //to 
-    console.log("userData",userData)
+    // console.log("userData",userData)
     const newUser = await User.create(userData);
 
     const url = `${req.protocol}://${req.get('host')}/me`;
@@ -148,7 +148,7 @@ const protect = catchAsync(async (req,res,next)=>{
        
     //5. Grant access
     req.user = currentUser;  //for restrictTo function
-    res.user = currentUser;
+    // res.user = currentUser;
     next();
 
 })

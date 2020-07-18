@@ -3,7 +3,6 @@
 const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 const fs = require('fs');
-const htmlToText = require('html-to-text')
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY)
 
@@ -61,7 +60,14 @@ class Email {
     };
 
     //3 create a transport and send email
-    await this.newTransport().sendMail(mailOptions);
+    await this.newTransport().sendMail(mailOptions,function(err, info){
+      if (err ){
+        console.log(error);
+      }
+      else {
+        console.log('Message sent: ' + info.response);
+      }
+    });
     // sgMail.send(mailOptions)
 
   }
