@@ -1,7 +1,10 @@
 // https://mailsac.com/inbox/milan@mailsac.com for fake mail
 
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const fs = require('fs');
+
+sgMail.setApiKey(process.env.SENDGRID_APIKEY)
 
 class Email {
   constructor(user, url) {
@@ -12,7 +15,6 @@ class Email {
   }
 
   newTransport() {
-    console.log("in Production 333",process.env.NODE_ENV)
     
     if (process.env.NODE_ENV.trim() === 'production') {
       return nodemailer.createTransport({

@@ -49,7 +49,7 @@ let reviewSchema = new mongoose.Schema({
 //solution is use index with unique option
 // we can set unique seperately for tour and user otherwise tour will have only one review and user can write only one reviewSchema
 //we need combionation of that
-reviewSchema.index({tour:1,user:1},{unique:true});
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 
 reviewSchema.pre(/^find/,function(next){
