@@ -129,7 +129,7 @@ app.all('*',function(req,res,next){
 
 //Better handled above code
     let err = new AppError(`Cant find  ${req.originalUrl} on this server`,"504");
-   next(err)  //when ever we pass anything in next function,express will consider it as error ,jump all middleware after that and jump to error middleware
+    next(err)  //when ever we pass anything in next function,express will consider it as error ,jump all middleware after that and jump to error middleware
 
 })
 

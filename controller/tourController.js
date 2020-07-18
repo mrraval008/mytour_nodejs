@@ -5,7 +5,7 @@ const Tour = require('./../models/TourModel');
 
 // const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/AppError');
+const AppError = require('./../utils/appError');
 const factory = require('./factoryController');
 
 
@@ -41,20 +41,17 @@ const resizeTourImages = catchAsync(async (req, res, next) => {
             .resize(2000, 1333)   //to make non-square image to square image
             .toFormat("jpeg")
             .jpeg({ quality: 90 })
-            .toFile(`D:/HTML_Practice/Apps/Tour_App/tour-app/src/assets/img/tours/${req.body.imageCover}`)
+            .toFile(`https://mytour11.herokuapp.com/src/assets/img/tours/${req.body.imageCover}`)
     }
     if(req.files && req.files.images){
-        req.body.images = []
-        await Promise.all(req.files.images.map(async (file, i) => {
-            const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
-    
-            await sharp(file.buffer)
-                .resize(2000, 1333)   //to make non-square image to square image
-                .toFormat("jpeg")
-                .jpeg({ quality: 90 })
-                .toFile(`D:/HTML_Practice/Apps/Tour_App/tour-app/src/assets/img/tours/${filename}`)
-            req.body.images.push(filename)
-        }))
+        const filename = `tour-${req.params.id}-${Date.now()}.jpeg`;
+        let file = req.files.images[0];
+        await sharp(file.buffer)
+            .resize(2000, 1333)   //to make non-square image to square image
+            .toFormat("jpeg")
+            .jpeg({ quality: 90 })
+            .toFile(`https://mytour11.herokuapp.com/src/assets/img/tours/${filename}`)
+        req.body.images = filename;
     }
  
 
