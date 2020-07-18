@@ -32,11 +32,8 @@ const uploadTourImages = upload.fields([
 
 const resizeTourImages = catchAsync(async (req, res, next) => {
 
-    console.log("file1",req.files)
-    
     if (req.files && req.files.imageCover) {
         req.body.imageCover = `tour-${req.params.id}-${Date.now()}.jpeg`;
-        console.log("req.files.imageCover",req.files.imageCover)
         await sharp(req.files["imageCover"][0].buffer)
             .resize(2000, 1333)   //to make non-square image to square image
             .toFormat("jpeg")

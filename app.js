@@ -101,7 +101,6 @@ if(process.env.NODE_ENV === 'development'){
 }
 //own middle ware
 app.use((req,res,next)=>{
-    console.log("req.files",req.files)
     // console.log("req.files1",req.photo)
     
     req.requestTime = new Date().toISOString();

@@ -13,7 +13,6 @@ class Email {
   }
 
   newTransport() {
-    console.log("in Production 333",process.env.NODE_ENV)
     
     if (process.env.NODE_ENV.trim() === 'production') {
       return nodemailer.createTransport({

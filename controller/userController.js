@@ -91,13 +91,10 @@ const updateMe = catchAsync(async (req, res, next) => {
       );
     }
 
-    console.log(req.file)
-  
     // 2) Filtered out unwanted fields names that are not allowed to be updated
     const filteredBody = filterObj(req.body, 'name', 'email');
 
     //to upload photo
-    console.log("req file",req.file)
     if(req.file){
       filteredBody.photo = req.file.filename;
     }

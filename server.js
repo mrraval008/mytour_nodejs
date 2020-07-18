@@ -31,7 +31,7 @@ const app = require('./app')
 //process is accesssible in any file
 port = process.env.PORT || 3000
 const server = app.listen(port,()=>{
-    console.log('listening')
+    console.log('listening AT ',port)
 })
 //We can set environmet variable when running  nodemon server.js in command prompt
 //run NODE_ENV="development" x=23 nodemon server.js and do console.log(process.env)
